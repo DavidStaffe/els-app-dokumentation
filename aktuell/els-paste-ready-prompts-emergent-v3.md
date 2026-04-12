@@ -11,6 +11,8 @@ Stand: April 2026 | Ziel: Hochwertige Produktanmutung + Produktivsystem + Demo-M
 ## Schritt 01: Produktbasis & Designsystem
 Entwirf eine hochwertige Tablet-/Desktop-App fuer ein sanitaetsdienstliches Einsatzleitsystem. Erstelle ein konsistentes Designsystem: Farbpalette (Primaer, Status: rot/gelb/gruen/grau), Typografie (3 Groessen), Spacing (4px-Raster), Komponenten (Karte, Badge, Chip, Button, Modal, Tabelle). Nutze Emergent-Komponenten-Primitives. Kein Showcase, operative Anmutung.
 
+> **Wichtig:** Alle benoetigen Spezifikations- und Referenzdateien befinden sich im verknuepften GitHub-Repository `DavidStaffe/els-app-dokumentation` (Ordner `/aktuell/`). Lies die dort hinterlegten Dateien (Kennzahlenkatalog, Gesamtspezifikation, Feldkatalog, Kapitelstruktur, Screens-UX, Handlungsablauf) **vor** dem Entwerfen und lege sie als Grundlage fuer saemtliche Design- und Funktionsentscheidungen zugrunde.
+
 ## Schritt 02: Einstieg & Incident-Auswahl
 Entwirf den Einstiegsscreen mit Incident-Liste. Zeige Incident-Name, Typ, Dauer, Status als uebersichtliche Karten. Aktiver Incident ist im Global-Header sichtbar. Demo-Incidents haben ein klar sichtbares DEMO-Badge. Nutze das Designsystem aus Schritt 01.
 
