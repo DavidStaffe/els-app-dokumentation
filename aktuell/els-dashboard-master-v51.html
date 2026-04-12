@@ -2,17 +2,220 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELS Master-Dashboard V51</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+.header{background:#1a1d2e;border-bottom:2px solid #3b82f6;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.4rem;font-weight:700;color:#60a5fa;letter-spacing:.5px}
+.header .meta{font-size:.8rem;color:#64748b}
+.nav{display:flex;gap:8px;padding:16px 24px;background:#13151f;border-bottom:1px solid #1e2235;flex-wrap:wrap}
+.nav button{padding:8px 16px;border-radius:6px;border:1px solid #2d3748;background:#1e2235;color:#94a3b8;cursor:pointer;font-size:.85rem;transition:all .2s}
+.nav button.active,.nav button:hover{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.container{padding:24px;max-width:1400px;margin:0 auto}
+.section{display:none}
+.section.active{display:block}
+.card{background:#1a1d2e;border:1px solid #1e2235;border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{font-size:1rem;font-weight:600;color:#60a5fa;margin-bottom:12px;border-bottom:1px solid #1e2235;padding-bottom:8px}
+.card h3{font-size:.9rem;font-weight:600;color:#94a3b8;margin:12px 0 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-blue{background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb}
+.badge-green{background:#14532d;color:#4ade80;border:1px solid #16a34a}
+.badge-yellow{background:#713f12;color:#fbbf24;border:1px solid #d97706}
+.badge-red{background:#7f1d1d;color:#f87171;border:1px solid #dc2626}
+.badge-gray{background:#1e2235;color:#64748b;border:1px solid #374151}
+.file-list{list-style:none}
+.file-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:6px;margin-bottom:6px;background:#13151f;border:1px solid #1e2235;font-size:.85rem}
+.file-list li:hover{border-color:#3b82f6}
+.file-list .fname{color:#e2e8f0;font-weight:500}
+.file-list .fmeta{color:#64748b;font-size:.75rem}
+.prompt-item{background:#13151f;border:1px solid #1e2235;border-radius:8px;padding:14px;margin-bottom:10px}
+.prompt-item .p-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prompt-item .p-title{font-weight:600;color:#e2e8f0;font-size:.9rem}
+.prompt-item .p-text{color:#94a3b8;font-size:.82rem;line-height:1.5;background:#0f1117;padding:10px;border-radius:6px;border:1px solid #1e2235}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.s-open{background:#1e2235;color:#64748b;border-color:#374151}
+.s-prompted{background:#1e3a5f;color:#60a5fa;border-color:#2563eb}
+.s-checked{background:#713f12;color:#fbbf24;border-color:#d97706}
+.s-done{background:#14532d;color:#4ade80;border-color:#16a34a}
+.checklist-container{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.archiv-item{background:#13151f;border:1px solid #374151;border-radius:8px;padding:12px;margin-bottom:8px;opacity:.7}
+.archiv-item .a-title{color:#64748b;font-size:.85rem;font-weight:500}
+.archiv-item .a-meta{color:#374151;font-size:.75rem;margin-top:4px}
+.info-box{background:#1e2235;border-left:3px solid #3b82f6;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:.85rem;color:#94a3b8}
+.warning-box{background:#2d1f00;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:.85rem;color:#fbbf24}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{background:#13151f;color:#64748b;padding:10px 12px;text-align:left;border-bottom:1px solid #1e2235;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid #13151f;color:#e2e8f0}
+tr:hover td{background:#1a1d2e}
+.progress-bar{background:#1e2235;border-radius:10px;height:6px;margin-top:6px}
+.progress-fill{background:#3b82f6;height:6px;border-radius:10px;transition:width .3s}
+</style>
 </head>
 <body>
-<!--
-  ELS Master-Dashboard V51
-  Stand: April 2026
-  Enthaelt: Aktuelle Artefakte, Archivbereich, Prompt-Checkliste Bolt + Emergent
-  mit mehrstufigen Status-Pills (offen / gepromptet / geprueft / fertig)
-  Lokale Speicherung per localStorage
--->
-<p>Dashboard V51 - Vollstaendige HTML-Version wird hier eingepflegt.</p>
-<p>Aktuelle Artefakte, Archivbereich und Prompt-Checkliste sind integriert.</p>
+<div class="header">
+  <h1>&#9670; ELS Master-Dashboard V51</h1>
+  <div class="meta">Stand: April 2026 &nbsp;|&nbsp; <span class="badge badge-green">Aktuell</span></div>
+</div>
+<div class="nav">
+  <button class="active" onclick="showSection('artefakte')">&#128196; Artefakte</button>
+  <button onclick="showSection('bolt')">&#9889; Prompts Bolt.New</button>
+  <button onclick="showSection('emergent')">&#10024; Prompts Emergent</button>
+  <button onclick="showSection('checkliste')">&#9745; Ausfuehrungs-Checkliste</button>
+  <button onclick="showSection('strategie')">&#127919; Strategie</button>
+  <button onclick="showSection('archiv')">&#128193; Archiv</button>
+</div>
+<div class="container">
+
+<!-- ARTEFAKTE -->
+<div id="artefakte" class="section active">
+<div class="card"><h2>&#128196; Aktuelle Artefakte &mdash; /aktuell/</h2>
+<ul class="file-list">
+<li><span class="fname">els-dashboard-master-v51.html</span><span class="badge badge-green">Aktuell</span></li>
+<li><span class="fname">els-paste-ready-prompts-bolt-v3.md</span><span class="badge badge-blue">V3</span></li>
+<li><span class="fname">els-paste-ready-prompts-emergent-v3.md</span><span class="badge badge-blue">V3</span></li>
+<li><span class="fname">els-figma-komponenten-briefing-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-handlungsablauf-app-und-rollen-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-auswertung-kennzahlenkatalog-v1.0.md</span><span class="badge badge-green">V1.0</span></li>
+<li><span class="fname">els-auswertung-und-abschlussbericht-gesamtspezifikation-v1.0.md</span><span class="badge badge-green">V1.0</span></li>
+<li><span class="fname">els-auswertung-abschlussbericht-screens-und-ux-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-abschlussworkflow-blocker-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-abschlussbericht-kapitelstruktur-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-abschlussbericht-feldkatalog-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+<li><span class="fname">els-abschlussbericht-export-und-layout-v0.1.md</span><span class="badge badge-gray">V0.1</span></li>
+</ul></div>
+<div class="info-box">Alle Dateien befinden sich im GitHub-Repo: <strong>DavidStaffe/els-app-dokumentation/aktuell/</strong> &mdash; Jede neue Version wird automatisch gepusht, veraltete Versionen wandern ins /archiv/.</div>
+</div>
+
+<!-- BOLT PROMPTS -->
+<div id="bolt" class="section">
+<div class="card"><h2>&#9889; Paste-Ready Prompts &mdash; Bolt.New V3</h2>
+<div class="info-box">Schritte 01-09 nacheinander ausfuehren. Produktivsystem, kein Demo-Only. Credit-sparsam aufgeteilt.</div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 01 &mdash; Produktbasis &amp; Designsystem</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Erstelle eine hochwertige Tablet-/Desktop-Web-App fuer ein sanitaetsdienstliches Einsatzleitsystem (ELS). Stack: React + TypeScript + Tailwind. Designsystem: Farbpalette (Primaer #3b82f6, Status rot/gelb/gruen/grau), Typografie (3 Groessen: 0.8/0.9/1rem), Spacing 4px-Raster. Komponenten: Karte, Badge, Chip, Button, Modal, Tabelle. Dark Mode als Standard. Operative Anmutung, kein Showcase.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 02 &mdash; Einstieg &amp; Incident-Auswahl</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue den Einstiegsscreen: Liste aller Incidents als Karten (Name, Typ, Dauer, Status-Badge). Global-Header zeigt aktiven Incident. Demo-Incidents erhalten klar sichtbares DEMO-Badge (gelb). Button: neuen Incident anlegen + Demo-Incident starten. Nutze das Designsystem aus Schritt 01.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 03 &mdash; Patientenliste</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue die Patientenliste fuer den aktiven Incident. Spalten: Kennung (auto), Sichtungsstufe (S1 rot/S2 gelb/S3 gruen/S4 grau, farbkodiert), Status, Verbleib. Filter-Chips oben. Button: neuen Patienten anlegen. Schnell scannbar, dichte aber lesbare Darstellung.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 04 &mdash; Patientendetail</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue den Patientendetail-Screen. Zeitstempel-Erfassung: Ankunft, Sichtung (=Behandlungsstart), Transportanforderung, Abschluss. Transporttyp: intern/extern. Fallabschluss-Typ: RD-Uebergabe / Entlassung / Manuell. KPI-Leiste kompakt oben sichtbar. Alle Felder editierbar.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 05 &mdash; Transportuebersicht</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue die Transportuebersicht. Zwei Tabs: Intern / Extern. Spalten: Patient, Ressource, Ziel, Status (angefordert/zugeteilt/abgeschlossen), Zeitstempel. Fehlende Ressourcen rot markiert. Offene vs. abgeschlossene visuell klar trennen.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 06 &mdash; Ressourcen, Kommunikation &amp; Konflikte</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue drei Module: (1) Ressourcen: Statusmatrix Fahrzeuge/Personal/Material, Status: verfuegbar/im Einsatz/ausgefallen, auch Status-Verteilung pro Ressource. (2) Kommunikation: Meldungsliste priorisiert, Typ-Badge. (3) Konflikte: rot=Blocker, gelb=Warnung, nach Schwere sortiert.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 07 &mdash; Produktreife</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Review aller Screens: Konsistente Designsprache pruefen. Leer-/Fehlerzustaende ergaenzen (leere Listen, keine Daten). Inkonsistenzen zwischen Screens beheben. Navigation vollstaendig verbinden. Loading-States hinzufuegen.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 08 &mdash; Demo-Integration</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Implementiere Demo-Modus: Button &quot;Demo-Incident starten&quot; laedt realistische Vordaten (mind. 8 Patienten, Transporte, Ressourcen, Meldungen). DEMO-Badge im Global-Header. Demo-Daten in allen Screens filterbar/ausblendbar. Kein Demo-Only &mdash; Produktivdaten bleiben erhalten.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 09 &mdash; Auswertungs-Dashboard &amp; Abschluss</span><span class="badge badge-blue">Bolt.New</span></div><div class="p-text">Baue Modul &quot;Auswertung &amp; Abschluss&quot;: (1) KPI-Dashboard 2-Spalten, Bloecke A-F (Patienten, Transport, Ressourcen, Kommunikation, Konflikte, Qualitaet). (2) Abschluss-Check: Blocker rot / Warnungen gelb / Ampel-Kopf. (3) Berichtsvorschau A4, 14 Kapitel Sidebar. (4) PDF-Export Druckansicht + Download. (5) Versionsliste mit Freigabe-Status.</div></div>
+</div></div>
+
+<!-- EMERGENT PROMPTS -->
+<div id="emergent" class="section">
+<div class="card"><h2>&#10024; Paste-Ready Prompts &mdash; Emergent V3</h2>
+<div class="info-box">Schritte 01-09 nacheinander ausfuehren. Emergent-Komponenten-Primitives nutzen. Operative Anmutung.</div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 01 &mdash; Produktbasis &amp; Designsystem</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf eine hochwertige Tablet-/Desktop-App fuer ein sanitaetsdienstliches Einsatzleitsystem. Erstelle konsistentes Designsystem: Farbpalette (Primaer, Status: rot/gelb/gruen/grau), Typografie (3 Groessen), Spacing (4px-Raster), Komponenten (Karte, Badge, Chip, Button, Modal, Tabelle). Nutze Emergent-Komponenten-Primitives. Kein Showcase, operative Anmutung.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 02 &mdash; Einstieg &amp; Incident-Auswahl</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf den Einstiegsscreen mit Incident-Liste. Zeige Incident-Name, Typ, Dauer, Status als uebersichtliche Karten. Aktiver Incident ist im Global-Header sichtbar. Demo-Incidents haben ein klar sichtbares DEMO-Badge. Nutze das Designsystem aus Schritt 01.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 03 &mdash; Patientenliste</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf die Patientenliste fuer einen aktiven Incident. Fokus: schnelle Scanbarkeit. Zeige Kennung, Sichtungsstufe (farbkodiert), Status, Verbleib. Filter als Chips. Neue Patienten anlegen. Verbinde mit Incident-Kontext.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 04 &mdash; Patientendetail</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf den Patientendetail-Screen. Zeige Zeitstempel-Erfassung, Sichtungskategorie (=Behandlungsstart), Transportanforderung (intern/extern), Fallabschluss-Typ. Dauerkennzahlen kompakt sichtbar.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 05 &mdash; Transportuebersicht</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf Transportuebersicht mit klarer intern/extern-Trennung. Zeige Status, Ressource, Ziel, Zeitstempel. Visuell klar: offene vs. abgeschlossene Transporte, fehlende Ressourcen.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 06 &mdash; Ressourcen, Kommunikation &amp; Konflikte</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf drei getrennte Module. Ressourcen: Statusmatrix je Typ, klar lesbar, inkl. Status-Verteilung pro Ressource. Kommunikation: Meldungen priorisiert. Konflikte: rot/gelb farbkodiert nach Schwere.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 07 &mdash; Produktreife</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Pruefe alle Screens: konsistente Designsprache, klare Informationshierarchie, sinnvolle Leer-/Fehlerzustaende. Vermeide Inkonsistenzen zwischen Screens.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 08 &mdash; Demo-Integration</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Fuege Demo-Modus ein: Button &quot;Demo-Incident starten&quot; mit realistischen Vordaten. Demo-Badge auf allen Screens. Demo-Daten filterbar.</div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">Schritt 09 &mdash; Auswertungs-Dashboard &amp; Abschluss</span><span class="badge badge-yellow">Emergent</span></div><div class="p-text">Entwirf Modul &quot;Auswertung &amp; Abschluss&quot;: (1) KPI-Dashboard 2-Spalten, dichte aber scannbare KPI-Kacheln, Bloecke A-F. (2) Abschluss-Check: Blocker rot / Warnungen gelb / Ampel-Kopf. (3) Berichtsvorschau A4-Optik, Sidebar Kapitel 1-14. (4) PDF-Versionen: Versionsliste, Freigabe-Status. (5) Nachbearbeitung: ruhiger Dokumentations-Screen.</div></div>
+</div></div>
+
+<!-- CHECKLISTE -->
+<div id="checkliste" class="section">
+<div class="card"><h2>&#9745; Ausfuehrungs-Checkliste</h2>
+<div class="info-box">Klicke auf den Status-Pill um ihn weiterzuschalten: Offen &#8594; Gepromptet &#8594; Geprueft &#8594; Fertig. Status wird lokal gespeichert.</div>
+<div class="checklist-container">
+<div>
+<h3>&#9889; Bolt.New &mdash; Schritte</h3>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B01 &mdash; Produktbasis &amp; Designsystem</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b01">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B02 &mdash; Einstieg &amp; Incident-Auswahl</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b02">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B03 &mdash; Patientenliste</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b03">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B04 &mdash; Patientendetail</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b04">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B05 &mdash; Transportuebersicht</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b05">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B06 &mdash; Ressourcen, Komm. &amp; Konflikte</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b06">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B07 &mdash; Produktreife</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b07">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B08 &mdash; Demo-Integration</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b08">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">B09 &mdash; Auswertung &amp; Abschluss</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="b09">&#9675; Offen</span></div></div>
+</div>
+<div>
+<h3>&#10024; Emergent &mdash; Schritte</h3>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E01 &mdash; Produktbasis &amp; Designsystem</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e01">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E02 &mdash; Einstieg &amp; Incident-Auswahl</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e02">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E03 &mdash; Patientenliste</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e03">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E04 &mdash; Patientendetail</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e04">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E05 &mdash; Transportuebersicht</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e05">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E06 &mdash; Ressourcen, Komm. &amp; Konflikte</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e06">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E07 &mdash; Produktreife</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e07">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E08 &mdash; Demo-Integration</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e08">&#9675; Offen</span></div></div>
+<div class="prompt-item"><div class="p-header"><span class="p-title">E09 &mdash; Auswertung &amp; Abschluss</span><span class="status-pill s-open" onclick="cycleStatus(this)" data-key="e09">&#9675; Offen</span></div></div>
+</div>
+</div></div></div>
+
+<!-- STRATEGIE -->
+<div id="strategie" class="section">
+<div class="card"><h2>&#127919; Ausfuehrungs-Strategie</h2>
+<div class="warning-box">Empfehlung: Erst Bolt.New komplett durchfuehren (B01-B09), dann Emergent (E01-E09). So entstehen zwei unabhaengige Produktivversionen zum Vergleich.</div>
+<h3>Phase 1 &mdash; Bolt.New (React/TypeScript)</h3>
+<table><tr><th>Schritt</th><th>Fokus</th><th>Credits-Aufwand</th><th>Abhaengigkeit</th></tr>
+<tr><td>B01</td><td>Designsystem aufbauen</td><td>Hoch</td><td>&mdash;</td></tr>
+<tr><td>B02</td><td>Einstieg + Incident</td><td>Mittel</td><td>B01</td></tr>
+<tr><td>B03-B06</td><td>Kern-Screens</td><td>Je Mittel</td><td>B01+B02</td></tr>
+<tr><td>B07</td><td>Produktreife</td><td>Mittel</td><td>B03-B06</td></tr>
+<tr><td>B08</td><td>Demo-Integration</td><td>Gering</td><td>B07</td></tr>
+<tr><td>B09</td><td>Auswertung &amp; Abschluss</td><td>Hoch</td><td>B07+B08</td></tr>
+</table>
+<h3 style="margin-top:16px">Phase 2 &mdash; Emergent (Komponentensystem)</h3>
+<table><tr><th>Schritt</th><th>Fokus</th><th>Credits-Aufwand</th><th>Abhaengigkeit</th></tr>
+<tr><td>E01</td><td>Designsystem aufbauen</td><td>Hoch</td><td>&mdash;</td></tr>
+<tr><td>E02-E06</td><td>Kern-Screens</td><td>Je Mittel</td><td>E01</td></tr>
+<tr><td>E07</td><td>Produktreife</td><td>Mittel</td><td>E02-E06</td></tr>
+<tr><td>E08-E09</td><td>Demo + Auswertung</td><td>Hoch</td><td>E07</td></tr>
+</table>
+<div class="info-box" style="margin-top:16px">Tipp: Schritt 09 (Auswertung &amp; Abschluss) ist der komplexeste Prompt. Ggf. in separaten Chat-Session starten um Kontext frisch zu halten.</div>
+</div></div>
+
+<!-- ARCHIV -->
+<div id="archiv" class="section">
+<div class="card"><h2>&#128193; Archiv &mdash; Veraltete Versionen</h2>
+<div class="info-box">Diese Artefakte wurden durch neuere Versionen ersetzt. Sie bleiben als Referenz erhalten damit Fortschritt nicht durch alte Ideen ueberschrieben wird.</div>
+<div class="archiv-item"><div class="a-title">els-dashboard-master-v50-platzhalter &mdash; OUTDATED</div><div class="a-meta">Platzhalter-HTML ohne vollstaendigen Code &bull; ersetzt durch V51 &bull; April 2026</div></div>
+<div class="archiv-item"><div class="a-title">els-paste-ready-prompts-bolt-v1.md &mdash; OUTDATED</div><div class="a-meta">Erste Prompt-Version, Single-Block &bull; ersetzt durch V2 dann V3 &bull; 2026</div></div>
+<div class="archiv-item"><div class="a-title">els-paste-ready-prompts-bolt-v2.md &mdash; OUTDATED</div><div class="a-meta">Zweite Prompt-Version, ohne Auswertungsmodul &bull; ersetzt durch V3 &bull; 2026</div></div>
+<div class="archiv-item"><div class="a-title">els-paste-ready-prompts-emergent-v1.md &mdash; OUTDATED</div><div class="a-meta">Erste Emergent-Version &bull; ersetzt durch V2 dann V3 &bull; 2026</div></div>
+<div class="archiv-item"><div class="a-title">els-paste-ready-prompts-emergent-v2.md &mdash; OUTDATED</div><div class="a-meta">Zweite Emergent-Version, ohne Auswertungsmodul &bull; ersetzt durch V3 &bull; 2026</div></div>
+<div class="archiv-item"><div class="a-title">Dashboard V1&mdash;V50 (HTML-Versionen) &mdash; OUTDATED</div><div class="a-meta">Alle Vorgaengerversionen des Dashboards &bull; ersetzt durch V51 &bull; 2026</div></div>
+</div></div>
+
+</div><!-- /container -->
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+const states=['s-open','s-prompted','s-checked','s-done'];
+const labels=['&#9675; Offen','&#9654; Gepromptet','&#9679; Geprueft','&#10003; Fertig'];
+function cycleStatus(el){
+  const cur=states.findIndex(s=>el.classList.contains(s));
+  const next=(cur+1)%states.length;
+  el.classList.remove(states[cur]);
+  el.classList.add(states[next]);
+  el.innerHTML=labels[next];
+  if(el.dataset.key) localStorage.setItem('els_'+el.dataset.key, next);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const saved=localStorage.getItem('els_'+el.dataset.key);
+    if(saved!==null){
+      const i=parseInt(saved);
+      states.forEach(s=>el.classList.remove(s));
+      el.classList.add(states[i]);
+      el.innerHTML=labels[i];
+    }
+  });
+});
+</script>
 </body>
 </html>
