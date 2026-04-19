@@ -58,3 +58,93 @@ Entwirf das Modul "Auswertung & Abschluss" mit professioneller operativer Absich
 3. Berichtsvorschau: professionelle A4-Optik, Sidebar-Kapitelnavigation 1-14
 4. PDF-Versionen: klare Versionsliste, Freigabe-Status sichtbar
 5. Nachbearbeitung: ruhiger Dokumentations-Screen, kein operativer Charakter
+
+
+## Schritt 10: Einsatzabschnitte
+
+Erweitere den Incident-Kontext um ein Einsatzabschnitt-Modul. Einsatzabschnitte sind benannte Teilbereiche eines Incidents (z.B. "Abschnitt Nord", "BHP", "Zelt A") denen Ressourcen zugeordnet werden können.
+
+Datenmodell:
+- id, incident_id, name (Freitext), farbe (Farbkodierung zur visuellen Trennung), beschreibung (optional), erstellt_um (Zeitstempel), aktiv (boolean)
+- Ressourcen-Zuweisung: jede Ressource kann genau einem Abschnitt zugeordnet sein (oder keinem)
+
+Anlegen & Bearbeiten:
+- Bei Incident-Erstellung: optionaler Schritt "Einsatzabschnitte anlegen" im Setup-Wizard (überspringbar)
+- Im laufenden Incident: Modul erreichbar über Hauptnavigation oder aus Ressourcen-Übersicht
+- Aktionen je Abschnitt: umbenennen, Farbe ändern, deaktivieren (kein Löschen bei laufendem Incident), Ressourcen zuweisen/entfernen
+
+UI-Screen "Einsatzabschnitte":
+- Kachelansicht: jeder Abschnitt als farbige Kachel mit Name, Anzahl zugewiesener Ressourcen, Status-Überblick der Ressourcen (Ampel: alle verfügbar / teilweise im Einsatz / kritisch)
+- Button "+ Abschnitt anlegen" prominent
+- Klick auf Kachel: Detailansicht mit vollständiger Ressourcenliste des Abschnitts, Ressourcen-Status je Zeile, direkte Zuweisung/Entfernung weiterer Ressourcen
+- In der Ressourcen-Statusmatrix (Schritt 06): neue Spalte "Abschnitt" mit Farbpunkt und Name
+- Ressource ohne Abschnitt-Zuweisung erscheint in Kategorie "Nicht zugewiesen" (grau)
+
+Integration Abschluss-Check:
+- Warnung wenn Ressourcen ohne Abschnitt-Zuweisung vorhanden (> 20% der Ressourcen)
+- KPI im Auswertungs-Dashboard: Anzahl Abschnitte, Ressourcenverteilung je Abschnitt
+
+## Schritt 11: UHS – Unterabschnitt Behandlungsplatz (Betten)
+
+Erweitere das Modul um einen Unterabschnittstyp "UHS / Behandlungsplatz" mit verwaltbaren Behandlungsbetten. Betten sind benannte Plätze (z.B. "Bett 1", "Liege 3", "Schockraum") an denen Patienten platziert und von dort weiter behandelt werden können.
+
+Datenmodell Behandlungsbett:
+- id, incident_id, abschnitt_id (optional: Bett kann einem Einsatzabschnitt angehören), name (Freitext), typ: ENUM [Liegend | Sitzend | Schockraum | Beobachtung | Sonstiges], status: ENUM [Frei | Belegt | Gesperrt], patient_id (FK, nullable), belegt_seit (Zeitstempel, automatisch bei Zuweisung), erstellt_um
+
+Anlegen & Bearbeiten:
+- Bei Incident-Erstellung: optionaler Schritt "Behandlungsplätze konfigurieren" im Setup-Wizard (überspringbar) – Schnellerfassung: Anzahl eingeben + Typ â€” Auto-Benennung (Bett 1, Bett 2 ...)
+- Im laufenden Incident: Betten hinzufügen, umbenennen, Typ ändern, sperren. Kein Löschen belegter Betten
+- Bestehende Betten können einem Einsatzabschnitt zugeordnet werden
+
+UI-Screen "Behandlungsplätze":
+- Rasteransicht: jedes Bett als Kachel, farbkodiert nach Status (Frei: grün / Belegt: rot / Gesperrt: grau)
+- Belegte Kachel: zeigt Patienten-Kennung, Sichtungsstufe-Badge (S1-S4 farbig), Zeit seit Belegung
+- Freie Kachel: Button "Patient zuweisen" öffnet Modal mit Patientenliste (filtert auf: Status = wartend/behandelbar, noch kein Bett zugewiesen)
+- Belegte Kachel: Buttons "Patient-Detail", "Transport anfordern", "Bett freigeben"
+- Bett-Typ-Icon je Kachel (Liege, Stuhl, Stern für Schockraum)
+- Filter-Chips: Alle / Frei / Belegt / Gesperrt / Nach Abschnitt
+- Button "+ Bett anlegen" und "Schnell-Setup" (Anzahl + Typ)
+
+Patient-Kontext:
+- Im Patientendetail (Schritt 04): neues Feld "Bett-Zuweisung" – zeigt aktuelles Bett, Bett ändern/freigeben möglich
+- Ein Patient kann nur einem Bett gleichzeitig zugewiesen sein
+- Bei Transport-Abschluss: Bett wird automatisch freigegeben
+
+Integration Abschluss-Check:
+- Blocker: Patienten mit Status aktiv ohne Bett-Zuweisung UND ohne Transport (unklärer Verbleib)
+- Warnung: Betten im Status Gesperrt über gesamte Incident-Dauer (nie genutzt)
+- KPI im Auswertungs-Dashboard Block A: durchschnittliche Bett-Belegungsdauer, maximale Gleichzeitigkeit, Bett-Auslastung gesamt
+
+## Schritt 12: Integration Einsatzabschnitte + UHS in Gesamtapp
+
+Verbinde die neuen Module (Schritt 10 + 11) nahtlos mit der bestehenden App-Architektur.
+
+Incident Setup-Wizard – erweiterter Ablauf:
+1. Incident-Grunddaten (Name, Typ, Ort, Datum)
+2. Einsatzabschnitte anlegen (optional, überspringbar) – Kacheln direkt im Wizard
+3. Behandlungsplätze konfigurieren (optional, überspringbar) – Schnell-Setup pro Abschnitt
+4. Ressourcen importieren/anlegen (bereits vorhanden, Abschnitt-Zuweisung jetzt möglich)
+5. Zusammenfassung + Incident starten
+
+Hauptnavigation:
+- Neue Nav-Einträge: "Abschnitte" und "Behandlungsplätze" sichtbar für Rollen EL und Sanitäter
+- Dokumentar: nur Lesezugriff
+
+Lagebildschirm (falls vorhanden) oder Ressourcen-Übersicht:
+- Gruppierung der Ressourcen-Matrix nach Einsatzabschnitt mit farbiger Trennlinie
+- Bett-Status-Zusammenfassung je Abschnitt als Kompakt-Widget
+
+Patientenfluss komplett:
+Patient angelegt → Bett zuweisen (aus Behandlungsplätze oder Patientendetail) → Behandlung → Transport anfordern → Transport abschließen → Bett automatisch freigegeben
+
+Demo-Incident (Schritt 08 ergänzen):
+- Demo-Daten enthalten: 2 Einsatzabschnitte, 6 Behandlungsbetten (4 belegt, 2 frei), realistische Patientenzuweisung auf Betten
+
+Abschluss-Checkliste (Schritt 09 ergänzen):
+- Blocker: Patienten aktiv ohne Bett und ohne Transport
+- Warnung: Abschnitte ohne zugewiesene Ressourcen
+- Warnung: Betten gesperrt (nie genutzt)
+- KPI-Block A ergänzen: Bett-Auslastung %, max. Gleichzeitigkeit, Ø Belegungsdauer
+- KPI-Block C ergänzen: Ressourcen je Abschnitt, Abschnitt-Übersicht im Bericht Kapitel 4
+
+Pruefen: Konsistenz zwischen allen Screens sicherstellen – kein Screen zeigt veraltete Zustände. Bett-Status und Abschnitt-Zuweisung müssen überall reaktiv aktualisiert werden (kein manuelles Reload).
