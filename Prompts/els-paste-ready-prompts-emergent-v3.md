@@ -28,14 +28,31 @@ Entwirf Transportuebersicht mit klarer intern/extern-Trennung. Zeige Status, Res
 ## Schritt 06: Ressourcen, Kommunikation & Konflikte
 Entwirf drei getrennte Module. Ressourcen: Statusmatrix je Typ, klar lesbar. Kommunikation: Meldungen priorisiert. Konflikte: rot/gelb farbkodiert nach Schwere.
 
-## Schritt 07: Produktreife
-Pruefe alle Screens: konsistente Designsprache, klare Informationshierarchie, sinnvolle Leer-/Fehlerzustaende. Vermeide Inkonsistenzen zwischen Screens.
+## Schritt 07: Zusätzliche Anforderung und Produktreife
+Es muss eine Rollenauswahl implementiert werden. Die UI und die sichtbaren Screens, Aktionen, Navigationseinträge und Bearbeitungsmöglichkeiten müssen abhängig von der gewählten Rolle dargestellt werden.
+Arbeite dabei mit den im Projekt definierten Rollen und leite die Rechte und Sichtbarkeiten aus den vorhandenen Dokumenten ab, insbesondere aus dem Handlungsablauf, der Gesamtspezifikation und dem Abschlussworkflow.
+Setze die Rollenauswahl so um, dass:
+- beim Einstieg eine Rolle gewählt oder simuliert werden kann,
+- die Navigation danach rollenabhängig angezeigt wird,
+- relevante Screens und Module je Rolle unterschiedlich sichtbar sind,
+- Bearbeitungsrechte, Freigaben, Abschlussprüfung und Berichtsfunktionen je Rolle unterschiedlich verfügbar sind,
+- lesende und schreibende Zugriffe klar getrennt sind,
+- die Rollendarstellung konsistent durch die gesamte App geführt wird.
+
+Dann pruefe alle Screens: konsistente Designsprache, klare Informationshierarchie, sinnvolle Leer-/Fehlerzustaende. Vermeide Inkonsistenzen zwischen Screens.
 
 ## Schritt 08: Demo-Integration
 Fuege Demo-Modus ein: Button "Demo-Incident starten" mit realistischen Vordaten. Demo-Badge auf allen Screens. Demo-Daten filtierbar.
 
 ## Schritt 09: Auswertungs-Dashboard & Abschluss
-Entwirf das Modul "Auswertung & Abschluss" mit professioneller operativer Anmutung:
+Für das Modul „Auswertung & Abschlussbericht“ gilt :
+- Das Auswertungs-Dashboard ist als operatives Lagebild zu gestalten, nicht als Analytics-Showcase.
+- Der Abschluss-Check muss harte Blocker und weiche Warnungen visuell und funktional klar trennen.
+- Die Berichtsvorschau muss A4-orientiert, druckfähig und wie ein echtes Einsatzdokument wirken.
+- PDF-Export und Versionen müssen administrativ, vertrauenswürdig und nachvollziehbar gestaltet sein.
+- Nachbearbeitung darf nur dokumentarisch erfolgen und den Incident nicht operativ reaktivieren.
+
+Entwirf das Modul "Auswertung & Abschluss" mit professioneller operativer Absicht:
 1. Auswertungs-Dashboard: 2-Spalten, dichte aber scannbare KPI-Kacheln, Bloecke A-F
 2. Abschluss-Check: starke visuelle Trennung Blocker (rot) vs. Warnungen (gelb), Ampel-Kopf
 3. Berichtsvorschau: professionelle A4-Optik, Sidebar-Kapitelnavigation 1-14
